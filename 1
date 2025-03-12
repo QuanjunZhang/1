@@ -1,0 +1,220 @@
+报告正文
+参照以下提纲撰写，要求内容翔实、清晰，层次分明，标题突出。请勿删除或改动下述提纲标题及括号中的文字。
+（一）立项依据与研究内容（建议8000字以内）：
+1. 项目的立项依据（研究意义、国内外研究现状及发展动态分析，需结合科学研究发展趋势来论述科学意义；或结合国民经济和社会发展中迫切需要解决的关键科技问题来论述其应用前景。附主要参考文献目录）；
+1.1 研究意义
+《“十四五”软件和信息技术服务业发展规划》明确指出，软件是新一代信息技术的灵魂，是数字经济发展的基础，要持续加强自动化测试平台的研发和推广应用，切实保障和提升软件质量水平。软件测试作为软件开发生命周期中至关重要的环节，对于构建可靠、安全、高效的现代软件体系具有不可替代的作用[1]。其中，单元测试作为一种重要的软件测试技术，能够在软件开发的早期阶段及时检测缺陷，加快开发进度，从而提升软件质量并降低维护成本[2]。在过去几十年间，如何自动生成高质量的单元测试用例，一直是学术界与工业界共同聚焦的前沿课题[3]。
+传统单元测试生成技术主要依赖不同的软件分析方法，以提高代码覆盖率，包括搜索算法[4]、随机算法[5]和符号执行[6]等。例如，EvoSuite[4]是一种典型的基于搜索的技术，它将测试用例生成建模为启发式搜索问题，以代码覆盖率作为适应度函数，并使用遗传算法寻找最优解。这些技术能够生成语法正确且高覆盖率的测试用例，但在测试代码的可读性和测试预言的有效性方面仍存在局限性。首先，该类技术生成的测试代码通常缺乏清晰的逻辑结构，变量和函数命名命名随机生成、缺乏直观性，使得测试人员难以理解其测试意图[7]。其次，该类技术以最大化覆盖率为优化目标，缺乏对被测代码的业务逻辑和开发者意图的理解，导致生成的测试预言在缺陷检测能力上存在不足[8]。因此，如何提升自动化单元测试生成的代码可读性，生成有效的测试预言，已成为当前软件测试领域亟待突破的关键难题。
+近年来，大语言模型技术蓬勃发展，广泛应用于软件工程、自然语言处理、图像识别等多个领域，并为自动化单元测试生成带来了新的机遇[14]。申请人博士阶段的前期探索[9][10][11]以及国内外相关研究[12][13]表明，大语言模型可有效解决传统测试生成技术在代码可读性和预言有效性方面的局限性。一方面，基于海量开源代码数据的训练，大语言模型能够学习到人类专家在编写测试代码时的风格和命名习惯，从而所生成的测试代码具备更清晰的逻辑结构和变量命名，有效提升测试代码的可读性[12][13]。另一方面，依托强大的代码语义理解能力，大语言模型能够准确分析被测代码的功能意图，从而生成有效地的测试预言[9][10][11]。然而，由于现代软件系统的复杂性及大模型在自主决策等方面的局限性，其在测试生成过程中面临诸多亟待解决的挑战。首先是上下文理解问题。单元测试生成往往涉及跨模块调用，需要准确理解整个系统的调用链关系。当前软件规模持续增长，代码库结构复杂，组件依赖关系高度耦合[15][16]。然而，大模型的输入长度受限，难以一次性处理完整的代码上下文；同时，输入过长导致大模型难以精准聚焦被测单元的核心逻辑，进而影响对关键依赖关系的有效捕捉。其次是人工依赖性高的问题。大模型通常依赖开发者预先设定的测试流程，缺乏自主规划和决策能力，难以根据实时测试状态灵活调整策略。同时，它无法主动调用和集成外部验证工具，限制了测试生成的自动化程程度。最后是代码正确性的问题。大模型是一种基于统计概率的静态推理技术，缺乏对代码动态执行逻辑的深层理解，生成的测试代码可能存在语法或语义层面缺陷，导致代码无法正确运行。综上所述，尽管大语言模型在单元测试生成领域展现出了显著潜力，但如何克服以上挑战，使其真正成为软件测试领域的“新质生产力”，仍然是当前学术研究和工程实践亟待解决的重要课题。
+为解决上述问题，立足于软件工程实际开发场景，本项目进行基于大语言模型的单元测试生成和修复的系统研究。实际场景中，开发者在编写测试用例时通常遵循三个核心步骤：首先理解被测单元的语义及其与其他单元的交互关系，随后编写测试用例覆盖核心功能，并在执行测试代码后对其缺陷进行润修复。基于这一典型开发者实践，并在申请人现有单元测试和代码修复的成果基础上，提出测试准备、测试生成和测试修复三阶段技术路径，以此解决上述三个挑战。在测试准备阶段，针对上下文理解挑战，本项目拟构建基于代码知识图谱的程序语义关系网络，助力大模型系统化地理解代码结构、关键调用路径和隐性依赖关系。在测试生成阶段，针对人工依赖挑战，本项目拟采用智能体机制，使大模型具备自主规划、任务拆解和工具调用的能力。在测试修复阶段，针对测试代码正确性挑战，本项目拟构建动静结合的自动修复机制，结合静态修复模板和动态反馈引导对缺陷测试代码进行迭代修复。本项目属于人工智能与软件工程的前沿交叉研究，对于推动智能化软件测试具有重要的理论意义，对于推动大模型战略规划在测试领域可靠落地具有重要的应用价值。
+1.2 国内外研究现状及发展动态分析
+1.2.1单元测试生成研究
+软件测试是软件开发与维护过程中提升质量和可靠性的关键环节[17]。根据测试对象的不同，软件测试可分为单元测试、集成测试和系统测试，分别关注基本单元的正确性、模块交互的稳定性，以及系统整体的可靠性[18]。其中，单元测试是软件测试的核心组成部分，主要用于验证代码单元是否按照预期正确运行。单元测试通常在软件开发的早期阶段介入，能够及早发现代码缺陷，从而有效提升软件质量，并降低后续开发和维护的成本。目前提出的自动化测试用例生成技术主要可以分为两部分，即传统的测试用例生成技术和基于深度学习的测试用例生成技术。现有的自动化单元测试用例生成技术主要可以分为两类：传统的测试用例生成技术和基于深度学习的测试用例生成技术
+（1）传统的测试用例生成技术
+该类技术主要从静态分析技术出发，利用启发式搜索算法或随机算法搜索被测函数测试输入空间，并生成相应的测试用例。例如EvoSuite[4]基于进化算法生成测试用例，采用遗传算法来优化测试用例，以最大化代码覆盖率；Randoop[5]基于随机测试方法，通过随机调用程序的方法自动生成测试序列，以便快速发现潜在错误。同时，按照所采用的技术不同，传统测试用例生成技术还包括基于模型检查[18][19]的测试用例生成技术，基于符号执行[6][20]的测试用例生成技术等。传统测试用例生成技术能够生成高编译通过率的测试用例，但是其生成的测试用例缺乏可读性和可维护性，在迭代频繁的项目开发中会导致大量的时间浪费。此外，传统测试用例生成技术难以准确理解代码语义，难以深入理解被测代码的业务逻辑和实际意图，因此生成的测试预言在实际缺陷检测能力方面存在明显不足。基于上述工作，本项目拟使用大语言模型挖掘丰富的代码语义和上下文信息，从而自动推导出高质量的测试输入和对应的测试预言，并提升生成测试用例的可读性与可维护性。
+（2）基于深度学习的测试用例生成技术
+基于深度学习的测试用例生成技术通常采用监督训练策略，将测试用例生成任务定义为一个序列到序列的学习任务，即以被测函数输入序列为基础，通过拟合模型参数，使其能够生成与输入序列相对应的正确测试用例。例如，AthenaTest[21]基于78万条Java测试用例数据，对编码器-解码器结构的Transformer模型BART进行微调，成功实现了为被测函数自动生成测试用例。A3Test[22]则在AthenaTest基础上进一步整合了测试断言验证数据及测试用例输出的后处理流程，有效提升了测试生成质量。此外，CAT-LM[23]基于仅解码器结构的GPT模型开展微调，实现了另一种有效的测试用例生成方案。然而，现有基于深度学习的测试用例生成方法虽然可以生成可读性和可维护性较高的测试用例，但其通常无法有效识别被测函数与项目间复杂的依赖关系，缺乏精准且必要的上下文信息引导。这导致生成的测试用例在实际应用中的编译通过率较低，测试覆盖率也受到限制。基于上述工作，本项目拟开展基于知识图谱的程序单元关联研究，通过深入分析被测函数的上下文依赖关系，提出完整且精确的上下文信息检索方法，从而为被测函数生成测试用例时提供必要且充分的上下文支持，以显著提高测试用例的质量与有效性。
+近年来，随着大语言模型快速发展，以ChatGPT为代表的对话式模型在代码理解与生成方面展现出卓越能力，推动了单元测试用例生成技术的进步，并在实际应用中取得了显著成效。例如，Schafer等人[24]提出的TestPilot利用ChatGPT的对话能力构建高效提示词，以提升单元测试用例生成质量。Ryan等人[25]提出SymPrompt，运用任务分解的思想，将测试用例生成流程细分为多个子阶段，每个阶段单独设计提示词，有效提高大模型在各子任务中的表现。此外，Chen等人[26]提出ChatUniTest，在已有工作基础上提出了“生成-验证-修复”的生成流程，进一步提升了生成测试用例的表现。同时，也有研究关注如何提升大语言模型生成测试用例的覆盖率。Wang等人[27]提出HITS，通过函数切片技术，针对被测函数的不同分支路径分别构建函数切片，并基于这些切片构建提示词，引导大语言模型专注于特定路径，从而有效提升复杂分支函数的测试覆盖率。基于大语言模型的测试用例生成技术通过多种策略，如任务分解、细粒度提示设计以及函数切片，有效增强了大模型生成测试用例的准确性与覆盖率，然而，由于现有方法生成测试用例流程固定，对不同被测函数往往采用相同的流程进行测试用例生成，使其无法根据被测函数的特点进行针对性的信息检索以及反馈迭代，同时，大模型在缺陷检测方面的表现也有待提升，针对特定类型缺陷的准确性和敏感性仍然不足。基于上述工作，本项目拟构建一个基于智能体的测试用例生成方法，在智能体自主规划能力的基础上，通过工具构建使其进行对环境的自由交互，通过流程设计引导智能体通过正确的测试开发流程生成测试用例，从而避免现有测试用例生成技术流程固定所带来的缺陷。
+（3）申请人在单元测试生成方面的工作
+申请人在基于大语言模型的单元测试研究上进行了系列探索。针对单元测试中的测试预言问题，申请人首次通过大规模实证探索了大语言模型在单元测试断言生成方面的实际表现[9]，同时一种基于检索增强的断言生成技术，进一步显著提升了现有大模型的断言生成准确率。基于上述工作，申请人进一步针对检索器优化的阶段，提出了一种基于混合检索增强生成的测试断言生成技术[10]，该技术构建了一种混合断言检索策略，使用词法相似度和语义相似度从外部代码库中检索最相关的断言知识引导大模型生成；同时申请人针对生成器训练阶段，提出了一种基于联合训练的断言生成测试技术[11]，该技术创新性地设计了一种联合训练策略，将检索器和生成器作为一个整体进行联合优化，使生成器能够从检索器提供的反馈中不断学习，并进行自适应调整。此外，申请人从更广泛地角度探索了大语言模型在单元测试领域中的实际表现[28]，涉及测试用例生成，测试断言生成，测试用例演化三个任务。针对传统单元回归测试，申请人提出了一种基于局部注意力的测试用例优先级技术[29]。申请人已有研究成果不仅奠定了申请人在单元测试领域的技术优势，也为本项目提供了坚实的理论基础和实践经验，促进基于大模型的测试代码生成方法的深入探索和优化。
+1.2.2代码缺陷修复研究
+代码缺陷修复技术[30]旨在自动化地修复软件系统中的代码缺陷[31]，缓解开发者负担。自Weimer等人[32]在2009年提出了第一个自动缺陷修复技术GenProg 以来，该方向受到了学术界和企业界的广泛关注，已经成为真实软件系统质量保证中最重要且最具有挑战性的方向之一。当前代码缺陷修复技术主要分为两类：第一类是传统的非深度学习的技术，包括基于启发式、基于约束求解和基于修复模板的方法。第二类是基于深度学习的技术。对于第一类传统技术，基于修复模板的方法利用人类专家手工设计的修复模式，将缺陷的代码片段转换为正确的代码。这类方法在过去数十年被研究人员广泛研究，并被认为是当前最先进的非深度学习补丁生成技术。对于第二类深度学习技术，其依托于大规模的训练数据集和先进的神经网络架构，显示出了强大的泛化能力和性能提升。
+（1）基于修复模板的代码缺陷修复技术。
+该类技术主要依赖开发者或研究人员的经验，预定义一系列修复模板，以指导缺陷修复过程。该技术的典型代表之一是 PAR，由 Kim 等人[33]在 2013 年提出。PAR 通过分析人工修复的补丁特征，归纳出十种修复模板，例如替换函数参数、修改变量初始化等。在 2019 年，Koyuncu 等人[34]利用 PAR 定义的修复模板来修复缺陷报告中的代码缺陷，并提出了 iFixR 修复工具。此后，研究者们进一步探索了不同的修复模板提取策略。2018 年，Liu 等人[35]借助代码修改提取工具，从 Stack Overflow 上收集的缺陷修复实例中提取代码修改操作，并由人工总结形成修复模板。同年，Tan 等人[36]通过分析 Android 应用软件崩溃的常见原因，总结出八种修复模板，并用于自动化修复 Android 相关缺陷。2019 年，Liu 等人[37]进一步对现有基于模板的修复技术进行了分析，并开发了 TBar 修复工具，整合了大部分已有的补丁模板。 
+然而，手工定义模板的过程负担较重，且难以覆盖所有类型的代码缺陷，因此该技术更适用于特定类型的缺陷修复。例如，2019 年 Marginean 等人[38]提出的 SapFix，主要用于修复面向对象语言中的空指针异常等特定类型的缺陷。 此外，不同研究者针对特定编程语言的常见缺陷，提出了相应的修复方案。2017 年，Tian 等人[39]提出 ErrDoc，专注于修复静态分析工具检测出的不正确条件检查、资源释放、错误值传播及输出错误。2016 年，Gao 等人[40]定义了三种修复模板，用于缓冲区溢出缺陷修复。同年，Yan 等人[41]分别提出了AutoFix，通过预定义模板来修复内存泄漏缺陷。2019 年，Xu 等人[42]采用添加空指针检查等模板，修复静态分析工具检测出的空指针异常。基于上述工作，同时考虑到大模型生成测试代码具有存在一些典型的缺陷模式，如语法错误、缺少依赖等，本项目特别设计了一套针对单元测试的专用修复模板，以系统化地优化大模型生成的测试代码。
+（2）基于深度学习的代码缺陷修复技术。
+该类技术从开源代码仓库中挖掘大量的代码提交记录，然后训练神经网络模型学习其中的修复模式。例如，Tufano等人[43]采用经典的神经机器翻译模型来生成候选补丁。CoCoNut[44]利用两个单独的编码器来编码错误代码及其上下文。此外，CURE[45]采用GPT为CoCoNut提供上下文嵌入。Zhu等人设计了一个语法引导的编辑解码器，以更细粒度的方式生成补丁。
+近期，随着大语言模型的快速发展，研究人员提出了一系列基于大语言模型的代码修复技术。例如，Wang 等人[46]提出RAP-Gen，该技术利用检索增强生成框架来增强微调 CodeT5 进行代码缺陷修复的效果。Nashid 等人[47]则提出了 CEDAR，该技术首先检索与缺陷代码最相似的修复示例，引导 Codex 在小样本学习环境下生 成正确代码。VulRepair[48]直接通过微调 CodeT5 进行漏洞修复，而 VQM[49]进一步利用 目标检测来帮助 CodeT5 在生成补丁时关注易受攻击的代码片段。目前在该领域，随着ChatGPT等对话式大模型的横空出世，当前的研究趋势逐渐利用大模型的自我更正能力来设计迭代反馈的修复框架，例如，Xia 等人[50]提出了首个对话式全自动程序修复框架，ChatRepair，该技术利用对话式大模型的特性将生成的补丁及其对应的失败测试用例的错误信息等作为回馈来指导大模型避免重复犯相同的错误。基于上述工作，本项目构建了一种全自动的测试“生成-反馈-修复”框架，该框架能够智能生成测试用例，并结合反馈机制持续优化和修正，以提升测试代码的准确性、覆盖率和可维护性，从而更有效地支持软件质量保障。
+（3）申请人在代码修复方面的工作。
+申请人在上述两种典型的修复路线上均进行了系列探索，并取得了优异成果。针对基于修复模板的代码缺陷修复技术，申请人提出了GAMMA[51]，一种基于修复模板引导的零样本学习补丁生成技术。该技术创新性地融合了融合大语言模型和修复模板，通过借助领域专家的模板知识，可以在无需任何额外训练的情况下，将代码修复任务转换为完形填空问题。该技术也受到国内外领域知名专家学者的高度赞誉，例如，西安电子科技大学闫峥教授等人认为GAMMA开创了将大模型和传统修复技术结合的新的方向，展示了如何在大模型时代创新地将传统修复方法与现代深度学习技术结合；国防科技大学毛晓光教授等人和南洋理工刘杨教授等人将GAMMA视为当前最先进的自动程序修复技术。针对基于深度学习的代码缺陷修复技术，申请人设计了一种统一的修复框架，并在该框架下系统分析了深度学习如何应用于代码修复的各个阶段。随后重点针对大语言模型层面，申请人一系列技术：在补丁生成阶段，提出了CIRCLE[52]，一种基于持续学习的多语言补丁生成技术，该技术可以在动态需求增加的场景下同时具有多语言修复和持续学习能力；在补丁验证阶段，提出了APPT[53]，一种基于端到端联合微调学习的补丁正确性验证技术，该技术可以有效筛选掉在补丁生成阶段的过拟合补丁，从而提升代码修复技术的实际价值；在补丁验证阶段，对大语言模型在下游漏洞修复的潜力进行了大规模的探索，同时提出了一种基于迁移学习的代码漏洞修复技术[54]，该技术表明了大语言模型在一些特定代码场景下的潜力。申请人已有研究成果不仅奠定了申请人在代码修复领域的技术优势，也为本项目提供了坚实的理论基础和实践经验，促进基于大模型的测试用例修复方法的深入探索和优化。
+1.3 本章小结
+综上所述，单元测试的质量直接影响软件系统的稳定性和可维护性。近年来，以大语言模型为代表的人工智能技术在软件工程领域展现出巨大潜力，为单元测试的智能化生成带来了全新的机遇。然而，当前单元测试生成方法仍存在诸多挑战，尤其在软件系统代码复杂性不断增加的背景下，大语言模型难以有效应对实际开发需求，限制了其在单元测试场景的应用价值。因此，本项目拟通过对软件开发流程和测试需求的深入分析，构建基于大语言模型的单元测试生成与修复体系，探索能够自动生成高质量、具备工业应用价值的测试用例的高效策略，并开发面向软件开发者的智能测试辅助工具，以提升单元测试的自动化水平和实际应用前景。
+参考文献
+[1]	Junjie Chen, Yanwei Bai, Dan Hao, Lingming Zhang, Lu Zhang, Bing Xie, Hong Mei. "Supporting Oracle Construction via Static Analysis." In Proceedings of the 31st IEEE/ACM International Conference on Automated Software Engineering, pp. 178--189. 2016.
+[2]	张智轶, 陈振宇, 徐宝文, 杨瑞. "测试用例演化研究进展." 软件学报. 2013. 24(4): 663-674.
+[3]	Daka Ermira, Gordon Fraser. "A Survey on Unit Testing Practices and Problems." In Proceedings of the 25th IEEE International Symposium on Software Reliability Engineering, pp. 201-211. 2014.
+[4]	Fraser Gordon, Andrea Arcuri. "EvoSuite: Automatic Test Suite Generation for Object-oriented Software." In Proceedings of the 19th ACM SIGSOFT Symposium and the 13th European Conference on Foundations of Software Engineering, pp. 416-419. 2011.
+[5]	Pacheco Carlos, Michael D. Ernst. "Randoop: Feedback-directed Random Testing for Java." In Companion to the 22nd ACM SIGPLAN Conference on Object-oriented Programming Systems and Applications Companion, pp. 815-816. 2007.
+[6]	Corina S Pǎsǎreanu, Peter C Mehlitz, David H Bushnell, Karen Gundy-Burlet, Michael Lowry, Suzette Person, Mark Pape. "Combining Unit-level Symbolic Execution and System-level Concrete Execution for Testing NASA Software." In Proceedings of the 2008 International Symposium on Software Testing and Analysis, pp. 15-26. 2008.
+[7]	Authors: Fabio Palomba, Annibale Panichella, Andy Zaidman, Rocco Oliveto, Andrea De Lucia. "Automatic Test Case Generation: What if Test Code Quality Matters?" In Proceedings of the 25th International Symposium on Software Testing and Analysis, pp. 130-141. 2016.
+[8]	Hao Yu, Yiling Lou, Ke Sun, Dezhi Ran, Tao Xie, Dan Hao, Ying Li, Ge Li, Qianxiang Wang. "Automated Assertion Generation via Information Retrieval and Its Integration with Deep Learning." In Proceedings of the 44th International Conference on Software Engineering, pp. 163-174. 2022
+[9]	Quanjun Zhang, Weifeng Sun, Chunrong Fang, Bowen Yu, Hongyan Li, Meng Yan, Jianyi Zhou, Zhenyu Chen. "Exploring Automated Assertion Generation via Large Language Models." ACM Transactions on Software Engineering and Methodology. 2025. 34(3): 1-25.
+[10]	Quanjun Zhang, Chunrong Fang, Yi Zheng, Yaxin Zhang, Yuan Zhao, Rubing Huang, Jianyi Zhou, Yun Yang, Tao Zheng, Zhenyu Chen. "Improving Deep Assertion Generation via Fine-Tuning Retrieval-Augmented Pre-trained Language Models." ACM Transactions on Software Engineering and Methodology, Just Accepted, DOI: 10.1145/3721128, 2025.
+[11]	Quanjun Zhang, Chunrong Fang, Yi Zheng, Ruixiang Qian, Shengcheng Yu, Yuan Zhao, Jianyi Zhou, Yun Yang, Tao Zheng, Zhenyu Chen. "Improving Retrieval-Augmented Deep Assertion Generation via Joint Training." IEEE Transactions on Software Engineering, Early Access, DOI: 10.1109/TSE.2025.3545970., 2025.
+[12]	Zhiqiang Yuan, Mingwei Liu, Shiji Ding, Kaixin Wang, Yixuan Chen, Xin Peng, Yiling Lou. "Evaluating and Improving ChatGPT for Unit Test Generation." Proceedings of the ACM on Software Engineering. 2024. 1(FSE): 1703-1726.
+[13]	Yutian Tang, Zhijie Liu, Zhichao Zhou, Xiapu Luo. "ChatGPT vs SBST: A Comparative Assessment of Unit Test Suite Generation." IEEE Transactions on Software Engineering, 2024, 50(6): 1340-1359.
+[14]	宫丽娜, 周易人, 乔羽, 姜淑娟, 魏明强, 黄志球. "预训练模型在软件工程领域应用研究进展." 软件学报. 2024. 36(1):1-26.
+[15]	钟浩, 张路, 梅宏. "软件库调用规约挖掘." 软件学报. 2011. 22(3): 408-416.
+[16]	杨芙清, 朱冰, 梅宏. "软件复用." 软件学报. 1995. 6(9): 525-533.
+[17]	章晓芳, 冯洋, 刘頔, 陈振宇, 徐宝文. "众包软件测试技术研究进展." 软件学报. 2018. 29(1): 69-88.
+[18]	Junjie Wang, Yuchao Huang, Chunyang Chen, Zhe Liu, Song Wang, Qing Wang. "Software Testing with Large Language Models: Survey, Landscape, and Vision." IEEE Transactions on Software Engineering, 2024, 50(04): 911-936.
+[19]	Eduard P. Enoiu1, Adnan Causevic, Thomas J. Ostrand, Elaine J. Weyuker, Daniel Sundmark, Paul Pettersson. "Automated Test Generation Using Model Checking: An Industrial Evaluation." International Journal on Software Tools for Technology Transfer. 2016. 18: 335-353.
+[20]	Angelo Gargantini, Constance Heitmeyer. "Using Model Checking to Generate Tests from Requirements Specifications." ACM SIGSOFT Software Engineering Notes. 1999. 24(6): 146-162.
+[21]	Tao Xie, Darko Marinov, Wolfram Schulte, David Notkin. "Symstra: A Framework for Generating Object-oriented Unit Tests Using Symbolic Execution." In Proceedings of the 11th International Conference on Tools and Algorithms for the Construction and Analysis of Systems, pp. 365-381. 2005.
+[22]	Michele Tufano, Dawn Drain, Alexey Svyatkovskiy, Shao Kun Deng, Neel Sundaresan. "Unit Test Case Generation with Transformers and Focal Context." arXiv preprint arXiv:2009.05617, 2020.
+[23]	Saranya Alagarsamy, Chakkrit Tantithamthavorn, Aldeida Aleti "A3Test: Assertion-augmented Automated Test Case Generation." Information and Software Technology. 2024. 176: 107565.
+[24]	Nikitha Rao, Kush Jain, Uri Alon, Claire Le Goues, Vincent J Hellendoorn. "CAT-LM Training Language Models on Aligned Code and Tests." In Proceedings of the 38th IEEE/ACM International Conference on Automated Software Engineering, pp. 409-420. 2023.
+[25]	Max Schäfer, Sarah Nadi, Aryaz Eghbali, Frank Tip. "An Empirical Evaluation of Using Large Language Models for Automated Unit Test Generation." IEEE Transactions on Software Engineering. 2023. 50(1): 85-105.
+[26]	Gabriel Ryan, Siddhartha Jain, Mingyue Shang, Shiqi Wang, Xiaofei Ma, Murali Krishna Ramanathan, Baishakhi Ray. "Code-aware Prompting: A Study of Coverage-guided Test Generation in Regression Setting Using LLM." In Proceedings of the ACM on Software Engineering. 2024. 1(FSE): 951-971.
+[27]	Yinghao Chen, Zehao Hu, Chen Zhi, Junxiao Han, Shuiguang Deng, Jianwei Yin. " ChatUniTest: A Framework for LLM-Based Test Generation." Companion Proceedings of the 32nd ACM International Conference on the Foundations of Software Engineering, pp. 572-576. 2024.
+[28]	Zejun Wang, Kaibo Liu, Ge Li, Zhi Jin. "HITS: High-coverage LLM-based Unit Test Generation via Method Slicing." In Proceedings of the 39th IEEE/ACM International Conference on Automated Software Engineering, pp. 1258-1268. 2024.
+[29]	Ye Shang∗, Quanjun Zhang∗, Chunrong Fang, Siqi Gu, Jianyi Zhou, Zhenyu Chen. "A Large-scale Empirical Study on Fine-tuning Large Language Models for Unit Testing." In Proceedings of the 34th ACM SIGSOFT International Symposium on Software Testing and Analysis, just accepted, pages to appear, 2025.
+[30]	Quanjun Zhang, Chunrong Fang, Weisong Sun, Shencheng Yu, Yutao Xu, Yulei Liu. "Test Case Prioritization Using Partial Attention." Journal of Systems and Software, 192:111419, 2022.
+[31]	姜佳君, 陈俊洁, 熊英飞. "软件缺陷自动修复技术综述." 软件学报. 2021. 32(9):2665-2690.
+[32]	玄跻峰, 任志磊, 王子元, 谢晓园, 江贺. "自动程序修复方法研究进展." 软件学报. 2016. 27(4): 771-784.
+[33]	Westley Weimer, ThanhVu Nguyen, Claire Le Goues, Stephanie Forrest. "Automatically Finding Patches Using Genetic Programming." In Proceedings of the 31st IEEE International Conference on Software Engineering, pp. 364-374. 2009.
+[34]	Dongsun Kim, Jaechang Nam, Jaewoo Song, Sunghun Kim. "Automatic Patch Generation Learned from Human-written Patches." In Proceedings of the 35th IEEE International Conference on Software Engineering, pp. 802-811. 2013.
+[35]	Anil Koyuncu, Kui Liu, Tegawende F Bissyande, Dongsun Kim, Martin Monperrus, Jacques Klein, Yves Le Traon. "iFixR: Bug Report Driven Program Repair." In Proceedings of the 27th ACM Joint Meeting on European Software Engineering Conference and Symposium on the Foundations of Software Engineering, pp. 314-325. 2019.
+[36]	Xuliang Liu, Hao Zhong. "Mining Stackoverflow for Program Repair." In Proceedings of the 25th IEEE International Conference on Software Analysis, Evolution and Reengineering, pp. 118-129. 2018.
+[37]	Shin Hwei Tan, Zhen Dong, Xiang Gao, Abhik Roychoudhury. "Repairing Crashes in Android Apps." In Proceedings of the 40th IEEE International Conference on Software Engineering, pp. 187-198. 2018.
+[38]	Kui Liu, Anil Koyuncu, Dongsun Kim, Tegawende F Bissyande. "TBar: Revisiting Template-based Automated Program Repair." In Proceedings of the 28th ACM SIGSOFT International Symposium on Software Testing and Analysis, pp. 31-42. 2019.
+[39]	Alexandru Marginean, Johannes Bader, Satish Chandra, Mark Harman, Yue Jia, Ke Mao, Alexander Mols, Andrew Scott. "SapFix: Automated End-to-end Repair at Scale." In Proceedings of the 41st International Conference on Software Engineering: Software Engineering in Practice, pp. 269-278. 2019. 
+[40]	Yuchi Tian, Baishakhi Ray. "Automatically Diagnosing and Repairing Error Handling Bugs in C." In Proceedings of the 11th Joint Meeting on Foundations of Software Engineering, pp. 752-762. 2017. 
+[41]	Fengjuan Gao, Linzhang Wang, Xuandong Li. "BovInspector: Automatic Inspection and Repair of Buffer Overflow Vulnerabilities." In Proceedings of the 31st International Conference on Automated Software Engineering, pp. 786-791. 2016.
+[42]	Hua Yan, Yulei Sui, Shiping Chen, Jingling Xue. "Automated Memory Leak Fixing on Value-flow Slices for C Programs." In Proceedings of the 31st Annual ACM Symposium on Applied Computing, pp. 1386-1393. 2016.
+[43]	Xuezheng Xu, Yulei Sui, Hua Yan, Jingling Xue. "VFix: Value-flow-guided Precise Program Repair for Null Pointer Dereferences." In Proceedings of the 41st International Conference on Software Engineering, pp. 512-523. 2019.
+[44]	Michele Tufano, Cody Watson, Gabriele Bavota, Massimiliano Di Penta, Martin White, Denys Poshyvanyk. "An Empirical Study on Learning Bug-fixing Patches in the Wild via Neural Machine Translation." ACM Transactions on Software Engineering and Methodology. 2019. 28(4): 1-29.
+[45]	Thibaud Lutellier, Hung Viet Pham, Lawrence Pang, Yitong Li, Moshi Wei, Lin Tan. "CoCoNut: Combining Context-aware Neural Translation Models Using Ensemble for Program Repair." In Proceedings of the 29th ACM SIGSOFT International Symposium on Software Testing and Analysis, pp. 101-114. 2020.
+[46]	Nan Jiang, Thibaud Lutellier, Lin Tan. "CURE: Code-aware Neural Machine Translation for Automatic Program Repair." In Proceedings of the 43rd International Conference on Software Engineering, pp. 1161-1173. 2021.
+[47]	Weishi Wang, Yue Wang, Shafiq Joty, Steven CH Hoi. "RAP-Gen: Retrieval-augmented Patch Generation with Codet5 for Automatic Program Repair." In Proceedings of the 31st ACM Joint European Software Engineering Conference and Symposium on the Foundations of Software Engineering, pp. 146-158. 2023.
+[48]	Noor Nashid, Mifta Sintaha, Ali Mesbah. "Retrieval-based Prompt Selection for Code-related Few-shot Learning." In Proceedings of the 45th International Conference on Software Engineering, pp. 2450-2462. 2023.
+[49]	Michael Fu, Chakkrit Tantithamthavorn, Trung Le, Van Nguyen, Dinh Phung. "VulRepair: A T5-based Automated Software Vulnerability Repair." In Proceedings of the 30th ACM Joint European Software Engineering Conference and Symposium on the Foundations of Software Engineering, pp. 935-947. 2022.
+[50]	Michael Fu, Van Nguyen, Chakkrit Tantithamthavorn, Dinh Phung, Trung Le. "Vision Transformer Inspired Automated Vulnerability Repair." ACM Transactions on Software Engineering and Methodology. 2024. 33(3): 1-29.
+[51]	Chunqiu Steven Xia, Lingming Zhang. "Automated Program Repair via Conversation: Fixing 162 out of 337 Bugs for $0.42 Each Using ChatGPT." In Proceedings of the 33rd ACM SIGSOFT International Symposium on Software Testing and Analysis, pp. 819-831. 2024.
+[52]	Quanjun Zhang, Chunrong Fang, Tongke Zhang, Bowen Yu, Weisong Sun, Zhenyu Chen. "GAMMA: Revisiting Template-based Automated Program Repair via Mask Prediction." In Proceedings of the 38th IEEE/ACM International Conference on Automated Software Engineering, pp. 535-547. 2023.
+[53]	Wei Yuan*, Quanjun Zhang*, Tieke He, Chunrong Fang, Nguyen Quoc Viet Hung, Xiaodong Hao, Hongzhi Yin. "CIRCLE: Continual Repair Across Programming Languages." In Proceedings of the 31st ACM SIGSOFT International Symposium on Software Testing and Analysis, pp. 678-690. 2022.
+[54]	Quanjun Zhang, Chunrong Fang, Weisong Sun, Yan Liu, Tieke He, Xiaodong Hao, Zhenyu Chen. "APPT: Boosting Automated Patch Correctness Prediction via Fine-tuning Pre-trained Models." IEEE Transactions on Software Engineering. 2024. 50(3): 474-494.
+[55]	Quanjun Zhang, Chunrong Fang, Bowen Yu, Weisong Sun, Tongke Zhang, Zhenyu Chen. Pre-trained Model-based Automated Software Vulnerability Repair: How Far are We? IEEE Transactions on Dependable and Secure Computing, 21(4): 2507-2525, 2024.
+ 
+2. 项目的研究内容、研究目标，以及拟解决的关键科学问题（此部分为重点阐述内容）；
+2.1研究内容
+ 
+图2.1 产研协同驱动的单元测试生成和修复技术研究内容
+本项目立足于软件工程实际开发场景，研究基于大语言模型的单元测试自动化生成技术，以提高测试用例的可读性和代码正确性，使其符合实际软件开发需求，并能够有效地辅助开发人员进行测试设计和执行。本项目依据测试生成流程划分为三个关键阶段，并围绕各阶段的核心问题开展针对性研究。首先，在测试准备阶段，本项目基于实际软件开发场景中的代码库，通过构建包含丰富程序语义特征的知识图谱，帮助大模型更系统化地理解代码结构、调用路径和关键依赖关系等，进而提升测试生成的覆盖率和缺陷检测能力。同时，在测试生成阶段，针对大模型测试生成过程中人工依赖性高、流程固化的问题，本项目引入智能体机制，使大模型具备自主规划、任务拆解和工具调用的能力，以降低人工干预，提高测试流程自动化水平。此外，在测试修复阶段，本项目还将结合静态修复模板分析和动态执行反馈的错误修复技术，构建自动修复机制，优化生成的测试用例，确保测试代码的正确性和可执行性。
+综合上述需求，同时结合国内外现有研究成果及申请人已有研究基础，本项目拟从以下三个方面开展基于大语言模型的单元测试生成与修复关键技术研究：（1）基于知识图谱的代码上下文检索研究；（2）基于智能体规划的测试生成研究；（3）基于动静结合的测试用例修复研究。本项目立足于三大核心阶段，拟通过三项研究内容，探索智能化测试生成与修复的系统理论，通过测试案例集分析大模型在单元测试中的典型缺陷机理，并研发面向开源社区的单元测试工具，从而构建完善的单元测试生成与修复方法体系。
+（1）基于知识图谱的代码上下文检索研究
+现代软件系统的复杂性使得单元测试生成任务不仅需要理解单个函数的逻辑，还需要准确把握其在整个代码库中的上下文关系。然而，大语言模型的输入长度有限，难以一次性处理完整的项目上下文信息，导致其在分析代码时容易遗漏关键依赖，无法准确理解被测单元的意图信息。同时，过多无关的上下文信息往往会包含大量与被测函数无关的冗余信息，最终影响生成测试用例的正确性和有效性。此外，大模型本质上是以参数形式存储知识，这意味着其知识仅限于训练时的数据，无法动态更新，也无法自动获取最新的代码信息和被测项目相关的领域知识。因此，本项目拟构建基于知识图谱的代码检索方法，以提升大模型对程序代码上下文的理解能力，增强其对最新知识和特定领域信息的适应性，从而生成更精准的测试用例。
+本项目首先利用静态分析技术对代码库进行解析，提取其中的关键实体（如类、方法、变量）及其关联关系（如继承、调用、依赖），构建面向软件系统的知识图谱。其次，通过数据流分析挖掘代码中的隐性依赖，例如变量在多个方法间的传递关系、跨模块的函数调用路径等，从而补充传统静态分析难以捕捉的信息。在此基础上，本项目开发代码上下文检索工具，支持基于知识图谱的智能查询，使得大语言模型在生成测试用例时能够检索到相关的代码上下文信息，从而提高测试代码的逻辑完整性和业务适配性。
+（2）基于智能体规划的测试生成研究
+尽管为大语言模型提供准确的代码上下文可以提升生成的单元测试用例质量，但其测试生成能力仍受两大局限性制约。首先，大模型高度依赖开发者预设的固定测试流程，缺乏自主规划和决策能力，无法依据实时测试状态动态调整策略，导致测试生成过程缺乏灵活性。其次，模型自身无法主动调用或集成外部验证工具，这限制了测试过程的自动化水平。为此，本项目引入智能体机制，赋予大模型具备自主规划和任务拆解能力，并构建一套外部工具集合，供智能体调用，从而提升测试生成的自动化程度和执行效率。
+在测试流程设计方面，本项目结合测试开发专家知识，构建完整的测试用例开发流程，引导智能体进行测试需求分解（如分析被测函数的逻辑等价类）、测试用例生成（如优化测试输入以提升覆盖率）以及测试评估（如缺陷检测能力分析）。在外部工具构建方面，本项目基于知识图谱构建了一套用于智能体交互的上下文检索工具，使其能够模拟人类程序员的操作，精准查询类结构、函数调用关系及代码依赖信息。此外，本项目将为智能体在知识图谱中探索设计“焦点节点”机制，使其能够动态调整关注点，并高效检索相关实体，确保上下文信息获取的精准性。
+（3）基于动静结合的测试用例修复研究
+相对于传统的启发式或随机测试生成技术，大模型能够生成具有高可读性的测试代码，但是测试代码的语法正确性和逻辑正确性仍然难以保证。大模型本质上是基于概率的静态技术，并不真正理解代码的执行逻辑，而是通过统计模式进行推理。因此，在生成测试代码时，可能会出现语法错误、编译失败、逻辑不一致等问题，导致其无法直接执行。为此，本项目提出基于动静结合的测试用例修复方法，通过静态规则匹配和动态迭代优化相结合的方式，对生成的测试用例进一步优化，提高测试代码的可执行性和准确性。
+在静态修复方面，本项目基于常见代码缺陷模式（如变量未定义、函数调用错误、类型不匹配等），构建静态修复模板库，通过规则匹配方式快速修复可预测的简单错误。在动态修复方面，本项目利用测试反馈引导修复机制，结合运行时错误信息和测试执行日志，采用大语言模型进行迭代优化，不断调整测试输入和预期输出，以提升测试代码的正确性和缺陷检测能力。此外，为了提高修复过程的稳定性，本项目拟结合相似测试用例检索方法，从知识图谱的高质量测试用例中借鉴修复策略，从而提升修复的精准度和效率。
+2.2 研究目标
+围绕上述基于大模型的单元测试生成和修复技术的研究内容，本项目主要确立以下研究目标。
+（1）研究一套产研融合的智能化单元测试生成和修复理论
+本项目拟通过构建知识图谱和智能体机制，模拟开发人员在实际软件开发过程中的测试编写思路，生成符合真实软件开发需求的单元测试用例，以提升软件测试的自动化水平和质量保障能力。不同于现有的自动单元测试生成方法，本项目不仅综合考虑大语言模型在测试生成上的最新研究进展，还进一步研究如何结合程序语义分析，使得生成的测试用例更具可读性、可维护性，并能够满足实际软件开发中的测试需求。在全面提升单元测试生成质量的同时，本项目优先保障测试技术的可用性，避免传统基于搜索或随机生成的测试方法在复杂项目中难以维护的问题。通过引入智能体机制，使大语言模型具备自主规划、任务拆解以及外部工具调用能力，减少开发人员的人工干预，提高测试代码的稳定性和执行效率。本研究的成果有助于加速大语言模型在软件工程领域的实际应用，推动自动化测试方法在工业界的落地，提升软件开发效率，保障软件质量，并促进人工智能在软件工程领域的可持续发展。
+（2）开发一个面向开源社区的智能化测试生成与修复工具
+软件测试不仅是代码质量保障的关键环节，也是开发人员、测试工程师和运维团队之间的桥梁。因此，本项目拟搭建一个智能测试生成与优化工具，供软件开发者、测试工程师和大模型研究人员协同使用和共同交流，以加速基于大模型的测试生成技术在实际场景中的应用。该工具面向开发者，提供基于自然语言描述的测试生成接口，降低测试编写门槛，使非测试专家也能轻松生成高质量的单元测试；面向测试工程师，提供代码分析、测试覆盖率分析及智能优化功能，提高测试用例的完整性和执行效率；面向大模型研究人员，提供基于大模型的测试生成中的焦点问题，帮助开发者快速定位行业痛点问题。通过这一工具的实现，本项目旨在打破测试自动化的技术壁垒，三方之间能够开展高效的、有价值的协作研究，推动智能化测试工具在工业界和开源社区的广泛应用，提升软件工程智能化水平。
+（3）构建一套揭示大模型典型缺陷机理的测试生成案例集
+大模型强大的语义推理能力赋予了生成高质量单元测试的可能性，但是其依赖统计模式进行推理，导致生成的测试代码可能存在逻辑漏洞、关键场景覆盖不足等问题。为了能为深度学习框架和软件的从业者提供丰富的研究样本、揭示行业发展面临的重要问题，本项目拟构建一套深度学习框架测试的案例数据集。因此，为了能为大模型研究者和软件开发者提供丰富的研究样本，从而系统性分析大模型在测试生成过程中的表现，本项目拟构建一套涵盖不同软件系统、不同测试需求的测试生成案例数据集。该数据集不仅包括大模型生成的测试用例及其对应的代码覆盖率、执行结果等详细信息，还结合静态分析和动态验证手段，归纳大模型测试生成的典型缺陷模式，并分析其在不同软件开发场景中的表现。通过统计学相关技术，本项目将揭示大模型生成测试代码的核心挑战，如上下文理解偏差、断言生成错误、测试用例冗余等。从定性和定量分析角度，为从业者揭示大模型测试生成的典型缺陷机理，为后续优化大模型测试生成提供数据支持，并为软件测试智能化提供可靠的理论依据和实践指导。
+2.3 拟解决的关键科学问题
+为实现上述研究目标，本项目需要解决以下关键科学问题。
+（1）面向大模型的单元测试生成中的上下文影响机制 
+当前的软件系统往往具有复杂的架构，代码库庞大且模块间存在紧密的依赖关系。然而，大模型在生成单元测试时，难以全面理解整个系统的调用链、数据流和控制流，导致测试用例可能遗漏关键依赖，甚至生成测试逻辑与实际业务不符的测试代码。此外，大模型的输入长度有限，难以一次性覆盖完整的代码上下文，从而影响其对目标代码逻辑的精准解析，甚至可能出现“幻觉问题”，即生成错误推测代码行为的测试用例。因此，如何构建高效的程序语义关系网络，利用知识图谱提取代码单元间的关键依赖关系，并结合代码检索技术，使大模型能够在测试生成时精准聚焦目标代码，提高测试用例的针对性和有效性，是本项目需要解决的关键科学问题。
+（2）智能体驱动的测试生成自动化与任务调度机理
+尽管大模型可以自动生成测试代码，但在实际测试过程中，测试任务的设计、执行、评估和优化仍然高度依赖人工干预。例如，针对不同的软件变更类型（如新增功能、缺陷修复、性能优化），测试策略需要动态调整，而当前的大模型无法自主完成测试策略规划和任务优化。此外，大模型无法自动调用外部测试工具（如静态分析工具、自动化测试框架、代码覆盖率分析器），导致测试执行仍需人工介入，限制了测试生成的自动化程度。因此，如何基于智能体机制，使大模型能够自主规划测试任务，动态决策测试策略，并结合外部测试工具提升测试执行效率，是本项目需要解决的关键科学问题。
+（3）代码修复驱动的测试代码质量保障与优化机制
+大模型生成的测试用例可能存在多种质量问题，例如测试逻辑不合理、关键边界情况遗漏、断言条件错误等，影响测试的有效性和可靠性。由于大模型本质上是一种基于概率的静态推理技术，并不能真正理解代码的执行逻辑，因此其生成的测试代码可能在语法上正确，但在逻辑上存在漏洞。此外，测试代码的维护成本较高，尤其是在代码频繁变更的开发环境下，测试用例可能因代码调整而失效，需要人工修复。因此，如何构建高效的自动修复机制，结合静态分析、动态执行验证和示例驱动的错误修复技术，自动优化测试代码，提高测试用例的稳定性和可执行性，降低人工干预成本，是本项目需要解决的关键科学问题。
+ 
+3. 拟采取的研究方案及可行性分析（包括研究方法、技术路线、实验手段、关键技术等说明）；
+3.1 研究方法
+本项目涵盖大语言模型在智能化单元测试生成和修复的应用研究，拟将理论体系构建、方法工具实现和实证分析相结合。针对基于知识图谱的代码上下文检索研究，主要以静态分析为主，研究程序代码在不同上下文场景下的结构化表示方法，探索不同类型程序实体及其关联关系的约束范围，构建全局代码单元隐性关联关系，为后续测试用例生成提供丰富且准确的上下文信息。针对基于智能体规划的测试用例生成研究，主要以流程设计与工具集集成为主，研究如何结合知识图谱信息优化测试上下文检索策略，并引导智能体自主决策测试任务拆解、测试输入生成及验证反馈过程，从而构建智能化、自动化的测试用例生成方法。针对基于动静结合的测试用例修复研究，主要以静态模板匹配与动态迭代反馈相结合为主，研究静态分析技术在不同类型错误（如语法错误、编译错误、执行错误）上的修复能力，同时结合大语言模型与相似测试用例检索，构建动态迭代修复机制，以提升测试用例的修复率和稳定性，为大规模自动化测试提供高效的错误修复方案。上述研究方向共同构成了一个基于知识图谱、智能体与自动修复的智能化测试流程，涵盖测试环境建模、理论体系构建及工具实现，以保障本研究的顺利开展，并推动软件测试领域的智能化发展。
+3.2 技术路线
+3.2.1 基于知识图谱的代码上下文检索研究
+本项目拟采用知识图谱来探索程序单元的关联关系，首先通过静态分析技术识别待分析程序中存在的实体以及实体之间的关系信息，初步构建知识图谱，之后利用静态分析方法为图中的所有单元方法实体进行分析，挖掘程序单元之间存在的隐性关联关系，进一步完善图构建，最终为测试用例生成方法提供准确详细的上下文信息，为复杂测试输入的构建提供充分的函数调用序列参考。
+本项目首先基于静态分析技术识别程序中的实体以及实体之间的关系信息，组成三元组，构建初步的知识图谱，其核心在于实体以及对应关系的定义，基于面向对象程序的性质，本项目拟将程序中包含的实体从宏观到具体定义为包、类、方法、变量四个大类，依据不同大类的性质，在每个大类中具体细分成若干小类，例如对于类实体，可以展开成普通类，抽象类，接口类，枚举类，装饰类，测试类等。在实体定义的基础上，本项目定义实体与实体之间的关系信息，例如普通类与抽象类之间存在继承关系，普通类与接口类之间存在实现关系等。在实体以及关系信息详细定义的基础上，本项目拟利用抽象语法树分析进行实体识别，利用指针分析技术进行关系识别，结合上述两种分析技术，挖掘程序中存在的实体以及实体之间的关系信息，构建起初步的知识图谱。
+ 
+图3.1基于知识图谱的代码上下文检索研究技术路线
+基于已有知识图谱，本项目拟利用静态分析技术，为图中的所有单元方法实体进行分析，挖掘程序单元之间的关联关系。具体而言，不同程序单元之间的关联关系不仅包括实体与实体之间的直接关联关系，还包括基于数据流处理所组成的一系列隐性关联关系，例如在一段实际执行的程序中，函数addElement与deleteElement分别负责向对应数组中加入元素和删除元素，两者并无直接的关联关系，但是在实际流程中其往往会对同一数组进行处理，从而对彼此产生隐性的影响。基于数据流处理所产生的程序单元的隐性关联关系往往难以识别，但在程序的业务逻辑中往往频繁出现，对这部分关联关系的研究可以进一步完善程序单元的关联信息，为后续测试用例生成等方法提供有效的上下文信息，并为复杂测试输入的构建提供正确且有用的函数调用序列参考。本项目拟利用数据流分析技术，为变量生存周期内所涉及到的实体建立隐性关联关系，并基于知识图谱中实体与关系的信息进行进一步分析与简化，完善对于程序单元中隐性关联关系的构建。
+在上述知识图谱的基础上，本项目拟构建一组上下文信息检索工具，工具基于知识图谱中构建的实体与关系进行检索。例如对于普通类节点，工具可以根据其出发的包含关系检索相关的方法节点，也可以根据进入到该节点的继承关系检索到相关的子类节点等等。该上下文信息检索工具可以有效利用知识图谱中丰富的程序依赖关系信息以及基于数据流的隐性关联关系信息，为后续需要上下文检索的相关任务提供准确有效的上下文检索功能。
+最终，本项目将构建一个完整的知识图谱生成方法，基于多种静态分析技术，以面向对象程序性质为依据，分析程序中的不同实体以及实体与实体之间的关系信息，构建出具有丰富程序特征的知识图谱，之后分析程序单元之间的隐性关联关系，进一步完善知识图谱中的程序单元关联信息，为后续的测试用例生成方法提供详细准确的上下文信息。
+3.2.2 基于智能体规划的测试用例生成研究
+ 
+图3.2基于智能体规划的测试用例生成研究技术路线
+本项目拟利用智能体的自主规划能力构建测试用例生成方法。现有基于大语言模型的测试用例生成方法大多采用“生成-验证-修复”的固定流程框架，忽视了不同测试用例的个体差异，导致被测函数上下文信息检索不充分或过于冗余，错误信息反馈单一，无法从历史信息中获取有用经验，从而导致最终生成测试用例的编译通过率，覆盖率以及缺陷检测能力不足。基于智能体的测试用例生成方法依托于智能体的自主规划能力，将智能体视作独立的测试开发人员，引导智能体自主探索，决策以及行动，避免固定的流程框架以解决现有测试用例生成方法中存在的不足之处。本项目拟从两方面开展基于智能体的测试用例生成研究，包括外部工具构建以及规划流程设计。其中外部工具构建给予智能体与环境自由交互的能力，使其可以模拟人类程序员进行项目环境上下文信息获取。流程设计则结合了测试开发的专家知识，使智能体以正确的测试用例开发流程来观察环境信息，进行决策，处理反馈等。
+参考人类程序员的测试开发流程，程序员在编写测试用例前需要了解大量的信息，包括被测函数的调用信息以及被调信息，调用该被测函数所需的前置条件，覆盖被测函数中特殊分支所需的测试输入等，人类程序员往往通过项目目录结构，语言服务器协议等工具进行相关上下文信息查询，然而上述工具具有复杂的图形界面，难以被智能体有效使用。为此本项目拟从具有丰富程序特征的知识图谱出发，构建一系列智能体友好的检索工具。具体来说，本项目首先基于知识图谱信息构建通用的检索工具，例如类节点检索工具，方法节点检索工具等，其次本项目拟为智能体在知识图谱中的探索设计一个焦点节点，基于该焦点节点提供其对相连关系节点的检索工具。例如给定当前被测函数为焦点节点，则基于该焦点节点在知识图谱中的关系信息，可查询出从调用关系出发，其到达的实体节点；从被调关系出发，其到达的实体节点；从包含关系出发，其到达的实体节点等。本项目拟根据节点间的不同关系构建检索工具，并提供焦点节点切换工具，允许智能体按照自主规划探索需要的全部信息。在智能体友好方面，本项目拟从模糊匹配，反馈迭代，函数化工具三个方面优化检索工具，包括对智能体输入内容进行模糊匹配，若智能体工具调用存在错误进行即时反馈引导，对工具进行函数化打包，利于智能体的工具调用以及返回结果分析。
+除了工具构建外，流程设计也是基于智能体的测试用例生成方法研究中重要的一环。智能体拥有自主规划的能力，但通常不具备细分领域的专家知识，如何有效对测试任务进行需求分解，测试生成以及测试评估，需要基于专家知识进行流程设计，将知识以流程的形式固定，从而为智能体提供专家引导。本项目拟从需求分解，测试生成以及测试评估三个阶段进行流程设计，需求分解主要包含被测函数意图总结，基于控制流的被测函数逻辑等价类划分，子测试需求生成等；测试生成主要包含上下文信息检索，测试用例生成与执行，错误测试用例迭代反馈修复等；测试评估主要包含测试用例意图分析，与测试需求的匹配性评估，覆盖率及缺陷检测能力评估等。基于上述测试开发专家知识，本项目拟设计一个完整充分的测试用例开发流程，结合智能体的自主规划能力，有效进行测试开发。
+最终，本项目将构建一个基于智能体规划的测试用例生成方法，从工具构建以及流程设计两方面出发，提供智能体友好的检索工具，融入测试开发专家知识，生成符合测试需求，满足测试流程，通过测试评估的高质量测试用例。
+3.2.3 基于动静结合的测试用例修复研究
+ 
+图3.1基于动静结合的测试用例修复研究技术路线
+本项目拟设计基于动静结合的测试用例修复方法，分别从静态修复模版和动态迭代反馈两个角度对缺陷测试用例进行修复。基于动静结合的测试用例修复方法首先基于静态修复模版，对缺陷测试用例中的常见简单类型错误进行静态修复，之后基于动态迭代反馈，对缺陷测试用例中存在的复杂错误类型进行动态修复。动静结合的测试用例修复方法具备静态模版针对简单错误修复的低成本和高效性，也兼顾了动态迭代对于复杂错误类型的有效修复能力，可以更好的应对不同错误类型的缺陷测试用例，进行高质量的测试用例修复。
+基于生成缺陷测试用例的常见简单错误类型，本项目拟从三大类型对其进行总结，分别为语法错误，编译错误以及执行错误。对于其中每一类型，本项目结合实际案例总结分析其类型中可能存在的简单错误，并整理出对应的修复模版。例如若报错类型为编译错误，并且报错信息中包含 “cannot find symbol”，则判定为符号缺失错误，查找对应类型修复模版中符号缺失相关模版，并依据模版寻找具体的缺失类并在测试用例中导入具体的包；若报错类型为语法错误，并且报错信息中包含 “‘}’expected”，则判定为代码块未正确闭合错误，查找对应类型修复模版中代码块相关模版，并依据模版寻找错误位置并插入正确的符号。为确保修复模版的完备性，本项目拟基于静态分析技术对三大类型错误中所有可能的缺陷类型进行分析，并结合实际程序的修复过程以及缺陷测试用例的修复流程，为常见缺陷类型构造相应的修复模版，做到对对应简单错误的低成本高修复率。
+进一步，对于静态修复模版无法修复的复杂错误类型，本项目拟构建动态迭代的修复过程进行修复，主要包括基于错误信息的上下文信息检索，相似测试用例检索以及基于大语言模型的迭代修复。动态迭代的修复过程首先考虑基于错误信息的上下文信息检索，主要根据报错信息进行相应的上下文信息查询，以减少大语言模型生成测试用例中存在的幻觉问题。之后尝试检索相似测试用例进行参考，例如兄弟类节点中同名函数的测试用例，同一接口不同实现函数的测试用例，基于数据流具有隐性关联的相近函数测试用例等。这些测试用例往往具有相同的测试需求以及测试逻辑，在一些复杂测试用例输入构建错误，复杂逻辑测试错误等类型中能够提供高价值的参考信息，从而帮助缺陷测试用例的修复。基于相关上下文信息检索以及相似测试用例检索，本项目拟构建完整的迭代修复方法，对复杂错误类型进行多轮修复尝试，返回正确的测试用例。
+最终，本项目将构建一个基于动静结合的测试用例修复方法，针对简单错误类型进行低成本，高质量的静态模版修复，针对复杂错误类型进行动态迭代的有效修复尝试，最终提供全类型缺陷测试用例的完整修复方案。
+3.3 实验手段
+为了提升基于大语言模型的自动化单元测试生成和修复的质量，并推动其在软件工程领域的实际应用，本项目将设计并实现一套融合知识图谱上下文检索、智能体自主调度和动静结合修复机制的测试生成方案。为了验证上述方法的有效性，本项目将从知识图谱理解、测试自动化优化、测试修复策略三个层次，系统评估大模型在测试生成中的有效性。同时，从测试覆盖率、测试可读性、缺陷检测能力等多个维度，综合评估测试用例的质量。此外，本项目采用自动化分析与人工评估相结合的方法，以确保测试用例既能满足代码覆盖需求，又具备良好的可维护性和缺陷检测能力。
+具体而言，在实验对象选择上，本项目综合考虑开源软件项目的规模、代码复杂度、编程语言多样性以及社区活跃度，选取JUnit、PyTest、GoogleTest、TestNG 等主流单元测试框架，并基于 GitHub 开源项目进行实验。这些测试框架涵盖 Java、Python、C++ 等主流编程语言，并已在企业级软件开发、云计算、人工智能等多个领域广泛应用。同时，这些项目在 GitHub、Stack Overflow 等开发者社区拥有较高的活跃度，有助于进行测试用例质量评估和优化。
+在基于知识图谱的全局上下文检索实验层面，本项目将构建程序语义知识图谱，并对大语言模型生成的测试用例进行实验分析。具体而言，本项目将对比不使用知识图谱和使用知识图谱优化两种大模型生成测试用例的情况，分析测试用例的覆盖率、合理性和语义完整性。通过分析函数调用关系、数据流依赖和控制流路径，评估大模型是否能更精准地聚焦待测代码，提高测试用例的针对性。同时，采用真实项目的代码变更场景，测试知识图谱在跨模块依赖关系识别中的有效性，并通过测试执行结果分析其在不同软件规模和复杂度下的适应性。
+在基于智能体机制的测试自动化实验层面，本项目将利用智能体机制，使大语言模型具备自主规划、任务拆解和工具调用能力，并验证其对测试生成的影响。具体而言，本项目将设计三组实验，分别对比手动编写测试、传统大模型直接生成测试、结合智能体机制优化的大模型 测试生成，分析测试代码的自动化程度和执行效率。同时，通过调用外部测试工具（如静态分析工具、代码覆盖率分析器），评估智能体在测试优化过程中的决策能力，并分析其对测试可维护性的影响。再者，采用代码变更实验，观察在软件功能更新或缺陷修复的情况下，智能体机制是否能自动调整测试策略，减少人工干预，提高测试的持续集成能力。
+在基于自动修复机制的测试正确性实验方面，本项目拟对比不同方法生成的测试代码的错误率、执行稳定性和逻辑合理性：具体而言，本项目将对比无自动修复机制、传统静态分析修复、结合示例驱动优化的自动修复三种方式，分析测试用例在逻辑正确性、边界情况覆盖率等指标上的差异。同时，通过自动化测试回归实验，在多个开源项目上执行生成的测试用例，观察其在代码演进过程中的稳定性，并评估自动修复机制对测试代码质量的提升幅度。最后，结合动态执行验证，分析自动修复机制在不同编程语言和代码风格下的适应性，并优化其对复杂软件结构的支持能力。
+最终，本项目将基于上述实验结果，进一步优化大语言模型生成测试用例的能力，并采用多项指标对测试用例的质量进行评估。首先是代码覆盖率，用于评估测试用例是否充分覆盖代码逻辑，包括语句覆盖、分支覆盖和路径覆盖等维度。其次是可读性与可维护性，用于分析生成测试用例的代码风格、变量命名规范性、结构清晰度等，确保其能被开发人员理解和维护。再者是缺陷检测能力，分析测试用例对潜在缺陷的发现能力，验证本研究方法是否能有效提高软件质量。本项目最终将在多个真实开源项目和企业级软件系统中进行大规模实验，以确保研究方法的通用性和实用性，并推动其在软件工程领域的应用落地。
+3.4 可行性分析
+项目申请人在前期的调研和准备工作过程中，充分探讨了研究内容，研究方法和技术路线，本项目在以下三方面均具备可行性。
+（1）方法路线可行性
+大语言模型在自动化单元测试生成方面展现出强大的潜力，能够有效捕获代码的语义信息，提升测试代码的质量和可维护性。本项目构建程序语义关系网络，将知识图谱技术与大语言模型深度融合，能够精准地分析代码上下文和函数调用关系，更准确地指导测试生成。同时，引入智能体机制，使大语言模型具备自主规划、任务拆解和自动调用外部工具的能力，从而实现测试用例生成的高自动化程度。最后，设计自动修复机制，基于静态分析、动态执行验证和示例驱动优化方法，自动修复测试用例中的语法错误、逻辑漏洞和边界情况遗漏问题。本项目的前期研究已初步验证了知识图谱对代码依赖解析的有效性，以及基于大模型的代码生成能力，在此基础上结合智能体策略和自动修复机制，可有效提升单元测试生成的准确性和实用性，充分证明了本项目的研究路线是可行的。
+（2）研究资源可行性
+单元测试生成技术在软件工程领域已有悠久的发展历程，积累了深厚的理论基础和丰富的实践经验，为本项目的研究提供了重要的参考和启发。同时，大模型驱动的软件测试自动化正处于快速发展阶段，国内外学术界和工业界均在积极探索相关方向，如基于机器学习的测试代码生成、代码语义分析等，为本项目的开展奠定了坚实的学术基础。此外，开源社区的蓬勃发展为本项目提供了丰富的数据资源和技术支撑。大量高质量的开源代码库、测试语料库以及测试框架工具，不仅能够作为大模型的训练数据，还能作为测试平台，助力测试自动化的优化和评估。申请人前期通过爬取GitHub等开源平台的数据，构建了初步的代码知识图谱与测试数据集，为后续研究提供了扎实的实验基础。本项目依托高维信息智能感知与系统”教育部重点实验室和“社会安全与图像视频理解”江苏省重点实验室，拥有坚实的科研支撑和充足的计算资源。同时，项目申请人与国内外知名软件企业保持紧密合作，能够充分结合实际软件开发场景开展研究，确保技术方案的工程可行性，并推动研究成果在工业界的落地应用，助力软件测试自动化的发展。
+（3）项目团队可行性
+本项目团队由教授、博士生、硕士生、本科生等多层次人才组成，结构合理，分工明确。团队长期从事软件测试、人工智能及软件工程等领域的研究，承担过多项国家自然科学基金、科技部重点研发计划项目，并在程序分析、软件质量保障、智能测试等方面取得了丰富的研究成果。博士生具备扎实的理论基础，熟悉代码分析、测试生成和机器学习方法，已在相关领域发表论文并取得成果；硕士生则具有较强的动手能力，能够高效进行数据处理、实验执行与结果分析。此外，团队成员与国内外多所知名高校学者建立了长期合作关系，在程序分析、智能软件测试、软件质量保障等方面展开深入研究，前期合作成果丰硕，为本项目的顺利实施提供了坚实的技术和理论支撑，确保了团队有能力完成预期的研究目标。
+ 
+4. 本项目的特色与创新之处；
+（1）借力打力——产研融合的单元测试质量保障建设新思路
+当前自动化单元测试生成技术主要侧重于提升代码覆盖率，但往往忽略了实际开发场景中的代码可读性、预言有效性和代码正确性等关键需求，导致生成的测试代码难以直接应用于产业实践。本项目基于产研融合的理念，借鉴实际开发者编写测试用例的模式，创新性地提出“测试准备—测试生成—测试修复”三阶段流程，并结合智能体机制进一步模拟开发者的测试任务拆解与优化过程。通过借助开发者实践经验的“力”，构建更符合软件工程实践的自动化测试体系，并以此发挥大语言模型在自动化测试生成中的“力”，从而优先检测困扰实际场景的缺陷，保障软件开发，形成产研一体化的单元测试质量保障建设新思路。
+（2）因势利导——智能体驱动的自主测试生成与修复调度机制
+现有基于大模型的测试生成方法虽然能够提供一定程度的自动化，但仍然高度依赖人工筛选、调整和执行测试用例，导致测试流程效率受限。本项目提出智能体驱动的测试生成与优化调度机制，赋予大模型自主规划、任务拆解和外部工具调用能力，使其能够根据代码变更类型（如新增功能、缺陷修复、性能优化）灵活调整测试策略。同时，智能体能够主动调用静态分析工具、自动化测试框架、代码覆盖率分析器等外部测试工具，对生成的测试用例进行自动筛选和验证，降低人工介入成本。通过因势利导，智能体能够自动评估测试代码质量，识别测试重点，并结合实际需求生成最优测试用例，从而减少人工干预，提高测试效率，使单元测试生成过程更加自动化、智能化。
+（3）博闻强识——知识图谱赋能的大模型测试理解新范式
+单元测试的核心在于精准刻画被测代码单元的逻辑，而传统单元测试生成方法往往受限于代码语义理解能力，难以精准捕捉被测函数的调用关系和逻辑依赖，导致生成的测试用例实用性不足，缺乏针对性。大模型尽管具有强大的代码理解能力，但由于提示词长度限制，往往局限于单个被测函数，难以理解代码的全局语义，导致无法准捕捉被测函数的调用关系和逻辑依赖。本项目创新性地引入知识图谱，构建程序语义关系网络，增强大模型对代码结构、调用路径、和数据流的理解能力，使其能够随时检索、调用项目中的全局信息，灵活适配不同测试需求。相比先前技术仅提供被测单元信息，知识图谱不仅能解析函数级信息，还能提供模块间的深层逻辑依赖，帮助大模型理解代码的整体架构，使测试用例的生成更加精准、全面。本项目借助知识图谱构建全面的项目知识库，使大模型具备博闻强识的能力，能够在测试生成过程中随时检索关键信息，精准调用关联知识，确保测试用例的合理性、有效性和覆盖率，从而减少人工干预，优化测试代码的可读性和可维护性，形成依托知识图谱的精准测试生成新范式。
+ 
+5. 年度研究计划及预期研究结果（包括拟组织的重要学术交流活动、国际合作与交流计划等）。
+5.1 年度研究计划
+(1) 2026年1月- 2026年12月:
+在综合国内外相关研究现状的基础上，系统调研大语言模型在单元测试生成领域的学术研究进展与工业应用实践，深入分析开发者单元测试实践经验，并划分测试流程。同时，熟悉并掌握相关实验平台和原型系统，设计并开展初步实验，评估技术方案的可行性与有效性，力争在各项研究内容取得单点突破。
+(2) 2027年1月- 2027年12月:
+在上一阶段的研究基础上，构建被测项目知识图谱，设计并实现上下文检索策略和智能体调用流程，集成外部工具集并加以验证。同时，从静态修复模板和动态迭代反馈角度出发，研究并实现单元测试代码的自动修复策略。构建基于大模型的单元测试生成和修复的初步原型工具，初步在实际应用场景中对工具原型进行验证，完善相应方法设计，并撰写学术论文及申请相关专利。
+(3) 2028年1月- 2028年12月:
+在现有基础上，与企业开发者开展协作实验与应用研究，进一步在实用性、可交互性等方面对原型工具进行迭代改进，形成面向开源社区的单元测试生成和修复工具。完善原型工具的研发、调试和文档撰写，推进基于语言大模型的测试生成和修复技术在实际软件开发中的初步应用，为项目验收做好准备。
+5.2 预期研究成果
+（1）研究一套产研融合的自动化单元测试生成和修复理论，解决大模型在测试生成过程中面临的上下文理解不足、人工依赖性高、代码正确性难以保证等关键技术问题，进一步推动大模型在软件测试自动化的发展，为软件工程领域提供高效、智能的质量保障方案，助力大模型在单元测试领域的落地应用。
+（2）开发并维护一个面向开源社区的单元测试生成和修复工具，构建一套解析大模型典型缺陷机理的测试用例案例集。
+（3）发表基于大模型的单元测试生成和修复相关的高水平学术论文5篇以上、申请发明专利或软件著作权不少于3项。
+（4）为我国培养一批智能软件测试人才，培养硕士研究生4-6名。项目组重点关注国内外软件工程及系统软件相关领域的权威会议，计划每年参加3-5人次会议，增进国际前沿研究的了解和促进国内外合作研究。
+（二）研究基础与工作条件
+1. 研究基础（与本项目相关的研究工作积累和已取得的研究工作成绩）；
+申请人博士毕业于南京大学软件学院，获得工学博士学位。长期从事智能化软件测试和程序修复研究工作，已取得了优异的研究成果。在学术研究方面，申请人在ICSE、FSE、ASE、ISSTA、TSE、TOSEM、TDSC、ACL和SCIS等国际顶尖学术期刊与会议上共发表35篇论文，其中包括CCF-A类25篇，包括。本人以第一作者身份发表CCF-A类长文8篇（5篇期刊：TOSEM*4、TSE*2、TDSC*1；1篇会议：ASE*1）；共同第一作者身份发表CCF-A类会议长文2篇（ISSTA 2022、ISSTA 2025）；第一作者发表 CCF-B类期刊1篇（JSS，中科院2区），共同第一作者CCF-C类会议研究长文1篇（Internetware，CCF高质量国际学术会议培育计划）。在技术创新与应用方面，申请人在近五年申请专利7项，其中4项已获授权，其余3项处于实质审查阶段，部分研究成果已在百度、华为、腾讯等一流软件企业应用。此外，申请人积极推动智能软件测试技术的应用，参与建设众包软件测试平台—慕测平台，支持全国大学生软件测试大赛、全国工业 APP 测试大赛等，具备丰富的智能软件测试研究与产业实践经验。
+（1）单元测试生成的研究基础
+近五年，申请人针对基于单元测试生成问题进行了一系列的探索，具有丰富的研究经验。申请人通过大规模实证分析首次探索了大模型在单元测试断言生成方面的实际表现[TOSEM'25a]，并提出了一种基于检索增强的断言生成方法，进一步显著提升了现有大模型的断言生成准确率。随后，分别聚焦于检索器阶段和生成器阶段，申请人创新性地提出了两种基于检索增强生成的单元测试断言技术，为提升单元测试的实用性提供了有效解决方案。针对检索器优化的阶段，申请人提出了一种基于混合检索增强生成的测试断言技术[TSE'25]。该方法结合了混合断言检索器与基于大语言模型的断言生成器，旨在提升断言生成的质量和准确性。针对生成器训练阶段，申请人提出了一种基于联合训练的断言生成测试技术[TOSEM'25b]。该技术提出了一种联合训练策略，使检索器能够从生成器提供的反馈中不断学习，并进行自适应调整，以便检索更具价值的外部知识，从而提升断言生成的精准度。此外申请人从更系统地角度探索了大语言模型在单元测试领域中的实际表现[ISSTA'25]，涉及测试用例生成，测试断言生成，测试用例演化三个任务。此外，针对传统单元回归测试，申请人提出了一种机遇局部注意力的测试用例优先级技术[JSS'22]。该系列工作是国际上最早研究将大语言模型引入单元测试领域的研究之一，为学术界和工业界在单元测试中有效使用大语言模型提供了若干实践指导，并为本项目研究提供了坚实的实验和理论基础。
+（2）代码程序修复的研究基础
+近五年，申请人针对基于大模型的程序代码修复，进行了一系列的成功探索。申请人首次在统一修复框架下，梳理了以大语言模型为代表的深度学习技术对程序修复带来的成果与挑战[TOSEM'23]。随后申请人以大语言模型为载体，分别从补丁生成、补丁验证和补丁应用三个阶段切入，提出一系列新颖的程序修复技术。在补丁生成阶段，申请人提出了一种按照语言顺序依次调优的多语言补丁生成技术[ISSTA'22]，提升了多种编程语言场景下补丁生成的有效性，同时提出了一种基于修复模板的补丁生成技术[ASE'23]，提升了大语言模型的补丁生成有效性；在补丁验证阶段，申请人提出了一种基于端到端学习的补丁正确性验证技术[TSE'24]，改善了生成补丁的人工审阅效率；在补丁应用阶段，申请人提出了一种基于场景迁移的安全漏洞修复技术[TDSC'24]，验证了程序修复在特定代码领域的应用价值。该系列工作是国内和国际较早期探索大语言模型进行代码修复的研究，并为本项目的测试代码修复研究奠定了大规模实验和理论基础。
+相关文献：
+[TOSEM'25a] Quanjun Zhang, Weifeng Sun, Chunrong Fang, Bowen Yu, Hongyan Li, Meng Yan, Jianyi Zhou, Zhenyu Chen. Exploring Automated Assertion Generation via Large Language Models. ACM Transactions on Software Engineering and Methodology, 34(3): 1-25, 2025.
+[TSE'25] Quanjun Zhang, Chunrong Fang, Yi Zheng, Ruixiang Qian, Shengcheng Yu, Yuan Zhao, Jianyi Zhou, Yun Yang, Tao Zheng, Zhenyu Chen. Improving Retrieval-Augmented Deep Assertion Generation via Joint Training.  IEEE Transactions on Software Engineering, Early Access, DOI: 10.1109/TSE.2025.3545970., 2025. 
+[TOSEM'25b] Quanjun Zhang, Chunrong Fang, Yi Zheng, Yaxin Zhang, Yuan Zhao, Rubing Huang, Jianyi Zhou, Yun Yang, Tao Zheng, Zhenyu Chen. Improving Deep Assertion Generation via Fine-Tuning Retrieval-Augmented Pre-trained Language Models. ACM Transactions on Software Engineering and Methodology, Just Accepted, DOI: 10.1145/3721128, 2025.
+[ISSTA'25] Ye Shang∗, Quanjun Zhang∗, Chunrong Fang, Siqi Gu, Jianyi Zhou, Zhenyu Chen A Large-scale Empirical Study on Fine-tuning Large Language Models for Unit Testing. In Proceedings of the ACM SIGSOFT International Symposium on Software Testing and Analysis, just accepted, pages to appear, 2025. (∗共同一作)
+[JSS'22] Quanjun Zhang, Chunrong Fang, Weisong Sun, Shencheng Yu, Yutao Xu, Yulei Liu. Test Case Prioritization Using Partial Attention. Journal of Systems and Software (JSS’22), 192:111419, 2022.
+[TOSEM'23] Quanjun Zhang, Chunrong Fang, Yuxiang Ma, Weisong Sun, Zhenyu Chen. A Survey of Learning-based Automated Program Repair. ACM Transactions on Software Engineering and Methodology, 33(2): 1-69, 2023. 
+[ISSTA'22] Wei Yuan∗, Quanjun Zhang∗, Tieke He, Chunrong Fang, Nguyen Quoc Viet Hung, Hongzhi Yin. CIRCLE: Continual Repair across Programming Languages. In Proceedings of the 31st ACM SIGSOFT International Symposium on Software Testing and Analysis, pages 678 - 690, 2022. (∗共同一作)
+[ASE'23] Quanjun Zhang, Chunrong Fang, Tongke Zhang, Bowen Yu, Weisong Sun, Zhenyu Chen. GAMMA: Revisiting Template-based Automated Program Repair via Mask Prediction. In Proceedings of the 38th IEEE/ACM International Conference on Automated Software Engineering (), pages 535–547, 2023. 
+[TSE'24] Quanjun Zhang, Chunrong Fang, Weisong Sun, Yan Liu, Tieke He, Xiaodong Hao, Zhenyu Chen. APPT: Boosting Automated Patch Correctness Prediction via Fine-tuning Pre-trained Models. IEEE Transactions on Software Engineering, 50(3): 474–494, 2024.
+[TDSC'24] Quanjun Zhang, Chunrong Fang, Bowen Yu, Weisong Sun, Tongke Zhang, Zhenyu Chen. Pre-trained Model-based Automated Software Vulnerability Repair: How Far are We? IEEE Transactions on Dependable and Secure Computing, 21(4): 2507-2525, 2024.
+2. 工作条件（包括已具备的实验条件，尚缺少的实验条件和拟解决的途径，包括利用国家实验室、全国重点实验室和部门重点实验室等研究基地的计划与落实情况）；
+本项目将依托南京理工大学开展，南京理工大学是隶属于工业和信息化部的国家首批“211 工程”重点建设院校。申请人所在的计算机科学与工程学院于2011年和2012年先后建立起“高维信息智能感知与系统”教育部重点实验室和“社会安全与图像视频理解”江苏省重点实验室，拥有先进的软硬件平台和网络建设研究环境良好，图书资料齐全，为本项目的 顺利实施提供了良好的基础支撑条件 。此外，实验室还购买了大量软件资源并订阅了大量的电子刊物全文数据库，例如ACM、Blackwell、Elsevier、IEEE/IEE、Kluwer、Springer、Wiley等，方便研究人员查阅国际最新文献资料。这些支持条件可以为项目顺利开展提供重要保障。其中，“高维信息智能感知与系统”创新引智基地 2013 年入选“高等学校学科创新引智计划”（ 简称“111”计划），为开展高水平 的国际 合作和学术交流提供了坚实的保障。同时，申请人项目组实验室拥有数十台高性能计算机，具备良好的开展单元测试研究的实验条件，满足本项目研究的开展需求。
+项目组成员建立了良好的沟通交流机制，并已在单元测试技术、代码程序修复技术等方面开展了定期研讨班。项目团队参与建设慕测平台，支持全国大学生软件测试大赛、全国工业App测试大赛等。此外，项目组与华为、百度和阿里等企业建立了长期良好的合作关系，充分具备开展单元测试研究的实验条件。项目团队还参与创建岭南信创测试研发中心，初步探索国家信息技术应用创新以及泛在操作系统的生态维护。综上可见，申请人及其团队具有良好的软、硬件环境，并与国内外同行及工业界建立了稳定的交流和合作关系，满足项目开展所需的各种条件。
+3. 正在承担的与本项目相关的科研项目情况（申请人正在承担的与本项目相关的科研项目情况，包括国家自然科学基金的项目和国家其他科技计划项目，要注明项目的资助机构、项目类别、批准号、项目名称、获资助金额、起止年月、与本项目的关系及负责的内容等）；
+无。
+4. 完成国家自然科学基金项目情况（对申请人负责的前一个已资助期满的科学基金项目（项目名称及批准号）完成情况、后续研究进展及与本申请项目的关系加以详细说明。另附该项目的研究工作总结摘要（限500字）和相关成果详细目录）。
+无。
+（三）其他需要说明的情况
+1. 申请人同年申请不同类型的国家自然科学基金项目情况（列明同年申请的其他项目的项目类型、项目名称信息，并说明与本项目之间的区别与联系；已收到自然科学基金委不予受理或不予资助决定的，无需列出）。
+无。
+2. 具有高级专业技术职务（职称）的申请人是否存在同年申请或者参与申请国家自然科学基金项目的单位不一致的情况；如存在上述情况，列明所涉及人员的姓名，申请或参与申请的其他项目的项目类型、项目名称、单位名称、上述人员在该项目中是申请人还是参与者，并说明单位不一致原因。
+无。
+3. 具有高级专业技术职务（职称）的申请人是否存在与正在承担的国家自然科学基金项目的单位不一致的情况；如存在上述情况，列明所涉及人员的姓名，正在承担项目的批准号、项目类型、项目名称、单位名称、起止年月，并说明单位不一致原因。
+无。
+4. 同年以不同专业技术职务（职称）申请或参与申请科学基金项目的情况（应详细说明原因）。
+无。
+5. 其他。
+无。
+
